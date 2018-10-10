@@ -2,8 +2,8 @@
 
 namespace App\Service;
 
+use App\Entity\EndUser;
 use App\Repository\EndUserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 
 class UserService
@@ -14,27 +14,20 @@ class UserService
     /** @var EndUserRepository */
     private $endUserRepository;
 
-    /**
-     * @param EntityManagerInterface $entityManager
-     * @param EndUserRepository $endUserRepository
-     */
     public function __construct(EntityManagerInterface $entityManager, EndUserRepository $endUserRepository)
     {
         $this->entityManager = $entityManager;
         $this->endUserRepository = $endUserRepository;
     }
 
-    public function getAllEndUsers(): ArrayCollection
+    public function getAllEndUsers(): array
     {
         $endusers = $this->endUserRepository->findAll();
 
-        return new ArrayCollection($endusers);
+        return $endusers;
     }
 
-    /**
-     * @return \App\Entity\EndUser|null
-     */
-    public function getEndUserByFirstName(string $firstName)
+    public function getEndUserByFirstName(string $firstName): ?EndUser
     {
         $endUser = $this->endUserRepository->findOneBy(['firstName' => $firstName]);
 
