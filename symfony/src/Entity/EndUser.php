@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -35,6 +37,11 @@ class EndUser
      * @ORM\Column(type="string", length=255)
      */
     private $phoneNumber;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Job", inversedBy="owner", cascade={"persist", "remove"})
+     */
+    private $job;
 
     public function getId(): ?int
     {
@@ -85,6 +92,18 @@ class EndUser
     public function setPhoneNumber(string $phoneNumber): self
     {
         $this->phoneNumber = $phoneNumber;
+
+        return $this;
+    }
+
+    public function getJob(): ?Job
+    {
+        return $this->job;
+    }
+
+    public function setJob(?Job $job): self
+    {
+        $this->job = $job;
 
         return $this;
     }

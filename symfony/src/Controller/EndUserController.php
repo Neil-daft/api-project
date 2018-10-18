@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Service\FractalService;
 use App\Service\UserService;
-use App\Transformers\UserTransformer;
+use App\Transformers\JsonUserTransformer;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -44,7 +44,7 @@ class EndUserController extends AbstractController
     public function getAllEndUsers(): Response
     {
         $allEndUsers = $this->userService->getAllEndUsers();
-        $resource = new Collection($allEndUsers, new UserTransformer());
+        $resource = new Collection($allEndUsers, new JsonUserTransformer(), 'enduser');
 
         return new Response($this->fractalService->getFractal()
             ->createData($resource)
@@ -61,7 +61,7 @@ class EndUserController extends AbstractController
     public function getEndUserByFirstName(string $firstName): Response
     {
         $endUser = $this->userService->getEndUserByFirstName($firstName);
-        $resource = new Item($endUser, new UserTransformer());
+        $resource = new Item($endUser, new JsonUserTransformer());
 
         return new Response($this->fractalService->getFractal()
             ->createData($resource)

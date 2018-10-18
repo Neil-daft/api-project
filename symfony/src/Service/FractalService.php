@@ -17,7 +17,7 @@ class FractalService
 
     public function getFractal(): Manager
     {
-        $this->manager->setSerializer(new JsonApiSerializer());;
+        $this->manager->setSerializer(new JsonApiSerializer($_SERVER['HTTP_HOST']));;
 
         return $this->manager;
     }
