@@ -11,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class EndUserController extends AbstractController
+class UserController extends AbstractController
 {
     /** @var UserService */
     private $userService;
@@ -30,21 +30,21 @@ class EndUserController extends AbstractController
     }
 
     /**
-     * @Route("/end/user", name="end_user")
+     * @Route("/", name="home")
      */
     public function index(): Response
     {
         return $this->json([
             'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/EndUserController.php',
+            'path' => 'src/Controller/UserController.php'
         ]);
     }
 
-    /** @Route("/end/user/all", name="all_end_users") */
+    /** @Route("/user/all", name="all_users") */
     public function getAllEndUsers(): Response
     {
-        $allEndUsers = $this->userService->getAllEndUsers();
-        $resource = new Collection($allEndUsers, new JsonUserTransformer(), 'enduser');
+        $allUsers = $this->userService->getAllEndUsers();
+        $resource = new Collection($allUsers, new JsonUserTransformer(), 'user');
 
         return new Response($this->fractalService->getFractal()
             ->createData($resource)
@@ -54,14 +54,33 @@ class EndUserController extends AbstractController
     }
 
     /**
-     * @Route("/end/user/{firstName}", name="end_user_by_first_name")
-     * @param string $firstName
+     * @Route("/user/{id}", name="user_by_id", requirements={"page"="\d+"})
+     * @param int $id
      * @return Response
      */
-    public function getEndUserByFirstName(string $firstName): Response
+    public function getUserById($id)
     {
-        $endUser = $this->userService->getEndUserByFirstName($firstName);
-        $resource = new Item($endUser, new JsonUserTransformer());
+        $user = $this->userService->getUserById($id);
+
+        $resource = new Item($user, new JsonUserTransformer(), 'user');
+
+        return new Response($this->fractalService->getFractal()->parseIncludes('job')
+            ->createData($resource)
+            ->toJson(),
+            Response::HTTP_OK,
+            ['content-type' => 'application/json']
+        );
+    }
+
+    /**
+     * @Route("/user/{email}", name="user_by_username")
+     * @param string $email
+     * @return Response
+     */
+    public function getEndUserByEmail(string $email): Response
+    {
+        $user = $this->userService->getUserByEmail($email);
+        $resource = new Item($user, new JsonUserTransformer(), 'user');
 
         return new Response($this->fractalService->getFractal()
             ->createData($resource)
@@ -70,4 +89,5 @@ class EndUserController extends AbstractController
             ['content-type' => 'application/json']
         );
     }
+
 }

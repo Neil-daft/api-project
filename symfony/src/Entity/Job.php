@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 
@@ -33,11 +35,11 @@ class Job
     private $createdOn;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\EndUser", mappedBy="job", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="job")
      */
-    private $owner;
-    
+    private $user;
 
+    
     public function getId(): ?int
     {
         return $this->id;
@@ -79,20 +81,14 @@ class Job
         return $this;
     }
 
-    public function getOwner(): ?EndUser
+    public function getUser(): ?User
     {
-        return $this->owner;
+        return $this->user;
     }
 
-    public function setOwner(?EndUser $owner): self
+    public function setUser(?User $user): self
     {
-        $this->owner = $owner;
-
-        // set (or unset) the owning side of the relation if necessary
-        $newJob = $owner === null ? null : $this;
-        if ($newJob !== $owner->getJob()) {
-            $owner->setJob($newJob);
-        }
+        $this->user = $user;
 
         return $this;
     }

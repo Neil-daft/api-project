@@ -4,6 +4,7 @@ namespace App\Transformers;
 
 use App\Entity\EndUser;
 use App\Entity\Job;
+use App\Entity\User;
 use League\Fractal\TransformerAbstract;
 
 class JsonUserTransformer extends TransformerAbstract
@@ -12,31 +13,28 @@ class JsonUserTransformer extends TransformerAbstract
      * List of resources to include automatically.
      * @var array
      */
-    protected $defaultIncludes = [
+    protected $availableIncludes = [
         'job'
     ];
 
-    public function transform(EndUser $endUser)
+    public function transform(User $user)
     {
         return [
-            'id' => (int)$endUser->getId(),
-            'first_name' => $endUser->getFirstName(),
-            'last_name' => $endUser->getLastName(),
-            'email' => $endUser->getEmail(),
-            'phone' => $endUser->getPhoneNumber(),
+            'id' => (int)$user->getId(),
+            'email' => $user->getEmail(),
             'links' => [
-                'self' => '/users/' . $endUser->getId()
+                'self' => '/users/' . $user->getId()
             ]
         ];
     }
 
-    public function includeJob(EndUser $endUser)
+    public function includeJob(User $user)
     {
-        $job = $endUser->getJob();
+        $job = $user->getJob();
         if (is_null($job)) {
             $job = new Job();
         }
-        return $this->item($job, new JobTransformer(), 'job');
+        return $this->collection($job, new JobTransformer(), 'job');
     }
 
 }
