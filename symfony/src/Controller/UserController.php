@@ -106,7 +106,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/users/{id}/jobs")
+     * @Route("/users/{id}/jobs", name="users_jobs")
      * @param int $id
      * @return Response
      */

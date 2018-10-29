@@ -2,6 +2,7 @@
 
 namespace App\Transformers;
 
+use App\Entity\Gardener;
 use App\Entity\Job;
 use App\Entity\User;
 use League\Fractal\TransformerAbstract;
@@ -9,7 +10,8 @@ use League\Fractal\TransformerAbstract;
 class JsonJobTransformer extends TransformerAbstract
 {
     protected $availableIncludes = [
-        'users'
+        'users',
+        'gardeners'
     ];
 
     public function transform(Job $job)
@@ -31,5 +33,16 @@ class JsonJobTransformer extends TransformerAbstract
         }
 
         return $this->item($user, new JsonUserTransformer(), 'users');
+    }
+
+    public function includeGardeners(Job $job)
+    {
+        $gardener = $job->getGardener();
+
+        if (is_null($gardener)) {
+            $gardener = new Gardener();
+        }
+
+        return $this->item($gardener, new JsonGardenerTransformer(), 'gardeners');
     }
 }
