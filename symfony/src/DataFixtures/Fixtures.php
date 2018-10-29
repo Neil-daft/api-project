@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Gardener;
 use App\Entity\Job;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -29,6 +30,17 @@ class Fixtures extends Fixture
             'password' => function ($user) {
                 $user->setPassword($this->passwordEncoder->encodePassword(
                     $user,
+                    'password'
+                ));
+            }
+        ]);
+        $populator->addEntity(Gardener::class, 15, [], [
+            'roles' => function ($gardener) use ($generator) {
+                $gardener->setRoles(['ROLE_USER_GARDENER']);
+            },
+            'password' => function ($gardener) {
+                $gardener->setPassword($this->passwordEncoder->encodePassword(
+                    $gardener,
                     'password'
                 ));
             }

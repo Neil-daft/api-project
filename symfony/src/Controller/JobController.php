@@ -48,7 +48,7 @@ class JobController extends AbstractController
         $job = $this->jobService->getOneJobById($id);
         $resource = new Item($job, new JsonJobTransformer(), 'jobs');
 
-        return new Response($this->fractalService->getFractal()->parseIncludes('users')
+        return new Response($this->fractalService->getFractal()->parseIncludes(['users', 'gardeners'])
             ->createData($resource)
             ->toJson(),
             Response::HTTP_OK,

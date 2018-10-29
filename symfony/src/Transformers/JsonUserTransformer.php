@@ -2,7 +2,6 @@
 
 namespace App\Transformers;
 
-use App\Entity\EndUser;
 use App\Entity\Job;
 use App\Entity\User;
 use League\Fractal\TransformerAbstract;

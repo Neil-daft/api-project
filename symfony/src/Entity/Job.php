@@ -39,6 +39,11 @@ class Job
      */
     private $user;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Gardener", inversedBy="jobs")
+     */
+    private $gardener;
+
     
     public function getId(): ?int
     {
@@ -89,6 +94,18 @@ class Job
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getGardener(): ?Gardener
+    {
+        return $this->gardener;
+    }
+
+    public function setGardener(?Gardener $gardener): self
+    {
+        $this->gardener = $gardener;
 
         return $this;
     }
