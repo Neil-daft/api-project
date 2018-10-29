@@ -6,10 +6,10 @@ use App\Entity\Job;
 use App\Entity\User;
 use League\Fractal\TransformerAbstract;
 
-class JobTransformer extends TransformerAbstract
+class JsonJobTransformer extends TransformerAbstract
 {
     protected $availableIncludes = [
-        'user'
+        'users'
     ];
 
     public function transform(Job $job)
@@ -22,7 +22,7 @@ class JobTransformer extends TransformerAbstract
         ];
     }
 
-    public function includeUser(Job $job)
+    public function includeUsers(Job $job)
     {
         $user = $job->getUser();
 
@@ -30,6 +30,6 @@ class JobTransformer extends TransformerAbstract
             $user = new User();
         }
 
-        return $this->item($user, new JsonUserTransformer(), 'user');
+        return $this->item($user, new JsonUserTransformer(), 'users');
     }
 }

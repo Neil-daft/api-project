@@ -2,12 +2,16 @@
 
 namespace App\Controller;
 
+use App\Entity\NullEntity;
 use App\Service\FractalService;
 use App\Service\UserService;
+use App\Transformers\JsonErrorTransformer;
+use App\Transformers\JsonJobTransformer;
 use App\Transformers\JsonUserTransformer;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -16,7 +20,7 @@ class UserController extends AbstractController
     /** @var UserService */
     private $userService;
 
-    /** @var  */
+    /** @var */
     private $fractalService;
 
     /**
@@ -40,7 +44,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    /** @Route("/user/all", name="all_users") */
+    /** @Route("/users/all", name="all_users") */
     public function getAllEndUsers(): Response
     {
         $allUsers = $this->userService->getAllEndUsers();
@@ -54,17 +58,16 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/user/{id}", name="user_by_id", requirements={"page"="\d+"})
+     * @Route("/users/{id}", name="user_by_id", requirements={"id"="\d+"})
      * @param int $id
      * @return Response
      */
     public function getUserById($id)
     {
         $user = $this->userService->getUserById($id);
+        $resource = new Item($user, new JsonUserTransformer(), 'users');
 
-        $resource = new Item($user, new JsonUserTransformer(), 'user');
-
-        return new Response($this->fractalService->getFractal()->parseIncludes('job')
+        return new Response($this->fractalService->getFractal()->parseIncludes('jobs')
             ->createData($resource)
             ->toJson(),
             Response::HTTP_OK,
@@ -73,16 +76,28 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/user/{email}", name="user_by_username")
-     * @param string $email
+     * @Route("/search/users", name="search_by_email")
+     * @param Request $request
      * @return Response
      */
-    public function getEndUserByEmail(string $email): Response
+    public function getEndUserByEmail(Request $request): Response
     {
+        $email = $request->query->get('email');
         $user = $this->userService->getUserByEmail($email);
-        $resource = new Item($user, new JsonUserTransformer(), 'user');
 
-        return new Response($this->fractalService->getFractal()
+        if (null === $user) {
+            $resource = new Item(new NullEntity(), new JsonErrorTransformer());
+
+            return new Response($this->fractalService->getFractal()
+                ->createData($resource)
+                ->toJson(),
+                Response::HTTP_NOT_FOUND,
+                ['content-type' => 'application/json']
+            );
+        }
+        $resource = new Item($user, new JsonUserTransformer(), 'users');
+
+        return new Response($this->fractalService->getFractal()->parseIncludes('jobs')
             ->createData($resource)
             ->toJson(),
             Response::HTTP_OK,
@@ -90,4 +105,22 @@ class UserController extends AbstractController
         );
     }
 
+    /**
+     * @Route("/users/{id}/jobs")
+     * @param int $id
+     * @return Response
+     */
+    public function getUsersJobs($id)
+    {
+        $user = $this->userService->getUserById($id);
+        $userJobs = $user->getJob();
+
+        $resource = new Collection($userJobs, new JsonJobTransformer(), 'jobs');
+        return new Response($this->fractalService->getFractal()
+            ->createData($resource)
+            ->toJson(),
+            Response::HTTP_OK,
+            ['content-type' => 'application/json']
+        );
+    }
 }

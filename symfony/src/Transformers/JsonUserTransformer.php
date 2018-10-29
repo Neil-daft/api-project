@@ -10,11 +10,10 @@ use League\Fractal\TransformerAbstract;
 class JsonUserTransformer extends TransformerAbstract
 {
     /**
-     * List of resources to include automatically.
      * @var array
      */
     protected $availableIncludes = [
-        'job'
+        'jobs'
     ];
 
     public function transform(User $user)
@@ -22,19 +21,19 @@ class JsonUserTransformer extends TransformerAbstract
         return [
             'id' => (int)$user->getId(),
             'email' => $user->getEmail(),
+            'roles' => $user->getRoles(),
             'links' => [
                 'self' => '/users/' . $user->getId()
             ]
         ];
     }
 
-    public function includeJob(User $user)
+    public function includeJobs(User $user)
     {
         $job = $user->getJob();
         if (is_null($job)) {
             $job = new Job();
         }
-        return $this->collection($job, new JobTransformer(), 'job');
+        return $this->collection($job, new JsonJobTransformer(), 'jobs');
     }
-
 }

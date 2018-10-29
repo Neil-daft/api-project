@@ -41,4 +41,16 @@ class UserService
         $user = $this->userRepository->find($id);
         return $user;
     }
+
+    public function searchUsers($email)
+    {
+        $user = $this->userRepository->findOneBy(['email' => $email]);
+
+        return $user;
+    }
+
+//    public function getAllJobsForUser($id)
+//    {
+//        $jobs = $this->userRepository->
+//    }
 }

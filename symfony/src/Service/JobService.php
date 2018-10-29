@@ -25,4 +25,11 @@ class JobService
 
         return $jobs;
     }
+
+    public function getOneJobById($id)
+    {
+        $job = $this->jobRepository->find($id);
+
+        return $job;
+    }
 }
