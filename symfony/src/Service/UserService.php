@@ -7,6 +7,8 @@ use App\Entity\User;
 use App\Repository\EndUserRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserService
 {
@@ -16,10 +18,17 @@ class UserService
     /** @var UserRepository */
     private $userRepository;
 
-    public function __construct(EntityManagerInterface $entityManager, UserRepository $userRepository)
-    {
+    /** @var UserPasswordEncoderInterface */
+    private $passwordEncoder;
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        UserRepository $userRepository,
+        UserPasswordEncoderInterface $passwordEncoder
+    ) {
         $this->entityManager = $entityManager;
         $this->userRepository = $userRepository;
+        $this->passwordEncoder = $passwordEncoder;
     }
 
     public function getAllEndUsers(): array
@@ -39,6 +48,7 @@ class UserService
     public function getUserById($id)
     {
         $user = $this->userRepository->find($id);
+
         return $user;
     }
 
@@ -49,8 +59,16 @@ class UserService
         return $user;
     }
 
-//    public function getAllJobsForUser($id)
-//    {
-//        $jobs = $this->userRepository->
-//    }
+    public function createUser(Request $request)
+    {
+        $user = new User();
+        $user->setEmail($request->query->get('email'));
+        $user->setRoles($request->query->get('roles'));
+        $user->setPassword($this->passwordEncoder->encodePassword($user, $request->query->get('password')));
+
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        return $user;
+    }
 }

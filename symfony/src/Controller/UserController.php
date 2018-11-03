@@ -20,7 +20,7 @@ class UserController extends AbstractController
     /** @var UserService */
     private $userService;
 
-    /** @var */
+    /** @var FractalService */
     private $fractalService;
 
     /**
@@ -48,7 +48,7 @@ class UserController extends AbstractController
     public function getAllEndUsers(): Response
     {
         $allUsers = $this->userService->getAllEndUsers();
-        $resource = new Collection($allUsers, new JsonUserTransformer(), 'user');
+        $resource = new Collection($allUsers, new JsonUserTransformer(), 'users');
 
         return new Response($this->fractalService->getFractal()
             ->createData($resource)
@@ -83,7 +83,7 @@ class UserController extends AbstractController
     public function getEndUserByEmail(Request $request): Response
     {
         $email = $request->query->get('email');
-        $user = $this->userService->getUserByEmail($email);
+        $user = $this->userService->searchUsers($email);
 
         if (null === $user) {
             $resource = new Item(new NullEntity(), new JsonErrorTransformer());
@@ -116,6 +116,24 @@ class UserController extends AbstractController
         $userJobs = $user->getJob();
 
         $resource = new Collection($userJobs, new JsonJobTransformer(), 'jobs');
+        return new Response($this->fractalService->getFractal()
+            ->createData($resource)
+            ->toJson(),
+            Response::HTTP_OK,
+            ['content-type' => 'application/json']
+        );
+    }
+
+    /**
+     * @Route("/users", name="create_user", methods={"POST"})
+     * @param Request $request
+     * @return Response
+     */
+    public function createUser(Request $request)
+    {
+        $user = $this->userService->createUser($request);
+        $resource = new Item($user, new JsonUserTransformer(), 'users');
+
         return new Response($this->fractalService->getFractal()
             ->createData($resource)
             ->toJson(),

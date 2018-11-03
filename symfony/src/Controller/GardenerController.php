@@ -19,8 +19,8 @@ class GardenerController
     private $gardenerService;
 
     /**
-     * @param $fractalService
-     * @param $gardenerService
+     * @param FractalService $fractalService
+     * @param GardenerService $gardenerService
      */
     public function __construct(FractalService $fractalService, GardenerService $gardenerService)
     {
@@ -49,10 +49,10 @@ class GardenerController
      *     "/gardeners/{id}",
      *     name="gardener_by_id",
      *     requirements={"id"="\d+"})
-     * @param $id
+     * @param int $id
      * @return Response
      */
-    public function getGardenerById($id)
+    public function getGardenerById(int $id)
     {
         $gardener = $this->gardenerService->getOneGardenerById($id);
         $resource = new Item($gardener, new JsonGardenerTransformer(), 'gardeners');

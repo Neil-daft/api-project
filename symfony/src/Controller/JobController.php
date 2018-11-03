@@ -8,6 +8,7 @@ use App\Transformers\JsonJobTransformer;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -23,7 +24,7 @@ class JobController extends AbstractController
     }
 
     /**
-     * @Route("/job/all", name="all_jobs")
+     * @Route("/jobs/all", name="all_jobs")
      */
     public function getAllJobs()
     {
@@ -54,5 +55,24 @@ class JobController extends AbstractController
             Response::HTTP_OK,
             ['content-type' => 'application/json']
         );
+    }
+
+    /**
+     * @Route("/jobs", name="create_job", methods={"POST"})
+     * @param Request $request
+     * @return Response
+     */
+    public function createNewJob(Request $request)
+    {
+        $job = $this->jobService->createJob($request);
+        $resource = new Item($job, new JsonJobTransformer(), 'jobs');
+
+        return new Response($this->fractalService->getFractal()
+            ->createData($resource)
+            ->toJson(),
+            Response::HTTP_OK,
+            ['content-type' => 'application/json']
+        );
+
     }
 }

@@ -13,8 +13,8 @@ class GardenerService
     private $gardenerRepository;
 
     /**
-     * @param $entityManager
-     * @param $gardenerRepository
+     * @param EntityManagerInterface $entityManager
+     * @param GardenerRepository $gardenerRepository
      */
     public function __construct(EntityManagerInterface $entityManager, GardenerRepository $gardenerRepository)
     {

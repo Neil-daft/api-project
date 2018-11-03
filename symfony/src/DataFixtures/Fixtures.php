@@ -24,7 +24,7 @@ class Fixtures extends Fixture
         $generator = Factory::create();
         $populator = new Populator($generator, $manager);
         $populator->addEntity(User::class, 40, [], [
-            'roles' => function ($user) use ($generator) {
+            'roles' => function ($user) {
                 $user->setRoles(['ROLE_USER']);
             },
             'password' => function ($user) {
@@ -35,7 +35,7 @@ class Fixtures extends Fixture
             }
         ]);
         $populator->addEntity(Gardener::class, 15, [], [
-            'roles' => function ($gardener) use ($generator) {
+            'roles' => function ($gardener) {
                 $gardener->setRoles(['ROLE_USER_GARDENER']);
             },
             'password' => function ($gardener) {

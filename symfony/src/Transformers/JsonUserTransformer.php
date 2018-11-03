@@ -30,7 +30,7 @@ class JsonUserTransformer extends TransformerAbstract
     public function includeJobs(User $user)
     {
         $job = $user->getJob();
-        if (is_null($job)) {
+        if (empty($job)) {
             $job = new Job();
         }
         return $this->collection($job, new JsonJobTransformer(), 'jobs');
