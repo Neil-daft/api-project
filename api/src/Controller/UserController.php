@@ -32,18 +32,7 @@ class UserController extends AbstractController
         $this->userService = $userService;
         $this->fractalService = $fractalService;
     }
-
-    /**
-     * @Route("/", name="home")
-     */
-    public function index(): Response
-    {
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/UserController.php'
-        ]);
-    }
-
+    
     /** @Route("/users/all", name="all_users") */
     public function getAllEndUsers(): Response
     {
