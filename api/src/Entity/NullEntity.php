@@ -6,7 +6,7 @@ class NullEntity
 {
     private $id;
     private $title = 'Null';
-    private $description = 'No resource found';
+    private $description = 'Null';
 
     /**
      * @return mixed

@@ -8,22 +8,36 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class UserControllerTest extends WebTestCase
 {
 
+    private $client;
+
+    public function setUp()
+    {
+        parent::setUp();
+        $this->client = static::createClient();
+    }
+
     public function testGetAllEndUsers()
     {
-        $client = static::createClient();
+        $this->client->request('GET', '/users/all');
 
-        $client->request('GET', '/user/all');
-
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
     }
 
     public function testGetUserById()
     {
-
+        $this->client->request('GET', '/users/3');
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
     }
 
-    public function testGetEndUserByEmail()
+    public function testSearchEndUserByEmail()
     {
+        $this->client->request('GET', '/search/users?email=neilo2000@gmail.com');
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+    }
 
+    public function testGetAUsersJobs()
+    {
+        $this->client->request('GET', '/users/3/jobs');
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
     }
 }

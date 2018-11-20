@@ -17,7 +17,7 @@ class FractalService
 
     public function getFractal(): Manager
     {
-        $this->manager->setSerializer(new JsonApiSerializer($_SERVER['HTTP_HOST']));;
+        $this->manager->setSerializer(new JsonApiSerializer('http://symfony.local'));;
 
         return $this->manager;
     }
