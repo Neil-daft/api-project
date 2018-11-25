@@ -13,6 +13,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class GardenerController
 {
+    const RESOURCE_KEY = 'gardeners';
+    const INCLUDES_JOBS = 'jobs';
+
     /** @var FractalService */
     private $fractalService;
     /** @var GardenerService  */
@@ -34,14 +37,9 @@ class GardenerController
     public function getAllGardeners()
     {
         $gardeners = $this->gardenerService->getAllGardeners();
-        $resource = new Collection($gardeners, new JsonGardenerTransformer(), 'gardeners');
+        $resource = new Collection($gardeners, new JsonGardenerTransformer(), self::RESOURCE_KEY);
 
-        return new Response($this->fractalService->getFractal()
-            ->createData($resource)
-            ->toJson(),
-            Response::HTTP_OK,
-            ['content-type' => 'application/json']
-        );
+        return $this->buildResponse($resource);
     }
 
     /**
@@ -55,9 +53,33 @@ class GardenerController
     public function getGardenerById(int $id)
     {
         $gardener = $this->gardenerService->getOneGardenerById($id);
-        $resource = new Item($gardener, new JsonGardenerTransformer(), 'gardeners');
+        $resource = new Item($gardener, new JsonGardenerTransformer(), self::RESOURCE_KEY);
 
-        return new Response($this->fractalService->getFractal()->parseIncludes('jobs')
+        return $this->buildResponseWithIncludes($resource, self::INCLUDES_JOBS);
+    }
+
+    /**
+     * @Route("/gardeners/{id}/jobs", name="gardeners_jobs")
+     * @param int $id
+     * @return Response
+     */
+    public function getGardenersJobs($id)
+    {
+        $gardener = $this->gardenerService->getOneGardenerById($id);
+        $jobs = $gardener->getJobs();
+
+        $resource = new Collection($jobs, new JsonJobTransformer(), self::INCLUDES_JOBS);
+
+        return $this->buildResponse($resource);
+    }
+
+    /**
+     * @param Item|Collection $resource
+     * @return Response
+     */
+    private function buildResponse($resource): Response
+    {
+        return new Response($this->fractalService->getFractal()
             ->createData($resource)
             ->toJson(),
             Response::HTTP_OK,
@@ -66,16 +88,13 @@ class GardenerController
     }
 
     /**
-     * @Route("/gardeners/{id}/jobs", name="gardeners_jobs")
+     * @param string $includes
+     * @param Item|Collection $resource
+     * @return Response
      */
-    public function getGardenersJobs($id)
+    private function buildResponseWithIncludes($resource, $includes): Response
     {
-        $gardener = $this->gardenerService->getOneGardenerById($id);
-        $jobs = $gardener->getJobs();
-
-        $resource = new Collection($jobs, new JsonJobTransformer(), 'jobs');
-
-        return new Response($this->fractalService->getFractal()
+        return new Response($this->fractalService->getFractal()->parseIncludes($includes)
             ->createData($resource)
             ->toJson(),
             Response::HTTP_OK,

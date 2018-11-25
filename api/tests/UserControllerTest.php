@@ -1,7 +1,7 @@
 <?php
+
 namespace App\tests;
 
-use App\Controller\UserController;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 

@@ -17,6 +17,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class UserController extends AbstractController
 {
+    const INCLUDES_JOB = 'jobs';
+    const STRING_USERS = 'users';
+
     /** @var UserService */
     private $userService;
 
@@ -37,13 +40,9 @@ class UserController extends AbstractController
     public function getAllEndUsers(): Response
     {
         $allUsers = $this->userService->getAllEndUsers();
-        $resource = new Collection($allUsers, new JsonUserTransformer(), 'users');
+        $resource = new Collection($allUsers, new JsonUserTransformer(), self::STRING_USERS);
 
-        return new Response($this->fractalService->getFractal()
-            ->createData($resource)
-            ->toJson(),
-            Response::HTTP_OK,
-            ['content-type' => 'application/json']);
+        return $this->buildResponse($resource);
     }
 
     /**
@@ -54,14 +53,9 @@ class UserController extends AbstractController
     public function getUserById($id)
     {
         $user = $this->userService->getUserById($id);
-        $resource = new Item($user, new JsonUserTransformer(), 'users');
+        $resource = new Item($user, new JsonUserTransformer(), self::STRING_USERS);
 
-        return new Response($this->fractalService->getFractal()->parseIncludes('jobs')
-            ->createData($resource)
-            ->toJson(),
-            Response::HTTP_OK,
-            ['content-type' => 'application/json']
-        );
+        return $this->buildResponseWithIncludes($resource, self::INCLUDES_JOB);
     }
 
     /**
@@ -84,14 +78,9 @@ class UserController extends AbstractController
                 ['content-type' => 'application/json']
             );
         }
-        $resource = new Item($user, new JsonUserTransformer(), 'users');
+        $resource = new Item($user, new JsonUserTransformer(), self::STRING_USERS);
 
-        return new Response($this->fractalService->getFractal()->parseIncludes('jobs')
-            ->createData($resource)
-            ->toJson(),
-            Response::HTTP_OK,
-            ['content-type' => 'application/json']
-        );
+        return $this->buildResponseWithIncludes($resource, self::INCLUDES_JOB);
     }
 
     /**
@@ -104,13 +93,9 @@ class UserController extends AbstractController
         $user = $this->userService->getUserById($id);
         $userJobs = $user->getJob();
 
-        $resource = new Collection($userJobs, new JsonJobTransformer(), 'jobs');
-        return new Response($this->fractalService->getFractal()
-            ->createData($resource)
-            ->toJson(),
-            Response::HTTP_OK,
-            ['content-type' => 'application/json']
-        );
+        $resource = new Collection($userJobs, new JsonJobTransformer(), self::INCLUDES_JOB);
+
+        return $this->buildResponse($resource);
     }
 
     /**
@@ -121,9 +106,33 @@ class UserController extends AbstractController
     public function createUser(Request $request)
     {
         $user = $this->userService->createUser($request);
-        $resource = new Item($user, new JsonUserTransformer(), 'users');
+        $resource = new Item($user, new JsonUserTransformer(), self::STRING_USERS);
 
+        return $this->buildResponse($resource);
+    }
+
+    /**
+     * @param Item|Collection $resource
+     * @return Response
+     */
+    private function buildResponse($resource): Response
+    {
         return new Response($this->fractalService->getFractal()
+            ->createData($resource)
+            ->toJson(),
+            Response::HTTP_OK,
+            ['content-type' => 'application/json']
+        );
+    }
+
+    /**
+     * @param string $include
+     * @param Item|Collection $resource
+     * @return Response
+     */
+    private function buildResponseWithIncludes($resource, $include): Response
+    {
+        return new Response($this->fractalService->getFractal()->parseIncludes($include)
             ->createData($resource)
             ->toJson(),
             Response::HTTP_OK,

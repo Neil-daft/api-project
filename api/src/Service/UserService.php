@@ -21,6 +21,11 @@ class UserService
     /** @var UserPasswordEncoderInterface */
     private $passwordEncoder;
 
+    /**
+     * @param EntityManagerInterface $entityManager
+     * @param UserRepository $userRepository
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     */
     public function __construct(
         EntityManagerInterface $entityManager,
         UserRepository $userRepository,
@@ -31,6 +36,9 @@ class UserService
         $this->passwordEncoder = $passwordEncoder;
     }
 
+    /**
+     * @return array
+     */
     public function getAllEndUsers(): array
     {
         $endusers = $this->userRepository->findAll();
@@ -38,6 +46,10 @@ class UserService
         return $endusers;
     }
 
+    /**
+     * @param string $email
+     * @return User|null
+     */
     public function getUserByEmail(string $email): ?User
     {
         $user = $this->userRepository->findOneBy(['email' => $email]);
@@ -45,6 +57,10 @@ class UserService
         return $user;
     }
 
+    /**
+     * @param int $id
+     * @return User|null
+     */
     public function getUserById($id)
     {
         $user = $this->userRepository->find($id);
@@ -52,6 +68,10 @@ class UserService
         return $user;
     }
 
+    /**
+     * @param string $email
+     * @return User|null
+     */
     public function searchUsers($email)
     {
         $user = $this->userRepository->findOneBy(['email' => $email]);
@@ -59,6 +79,10 @@ class UserService
         return $user;
     }
 
+    /**
+     * @param Request $request
+     * @return User
+     */
     public function createUser(Request $request)
     {
         $user = new User();

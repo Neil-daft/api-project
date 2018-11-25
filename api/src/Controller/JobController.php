@@ -14,9 +14,18 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class JobController extends AbstractController
 {
+    const RESOURCE_KEY = 'jobs';
+
+    /** @var JobService */
     private $jobService;
+
+    /** @var FractalService */
     private $fractalService;
 
+    /**
+     * @param JobService $jobService
+     * @param FractalService $fractalService
+     */
     public function __construct(JobService $jobService, FractalService $fractalService)
     {
         $this->jobService = $jobService;
@@ -29,14 +38,9 @@ class JobController extends AbstractController
     public function getAllJobs()
     {
         $allJobs = $this->jobService->getAllJobs();
-        $resource = new Collection($allJobs, new JsonJobTransformer(), 'jobs');
+        $resource = new Collection($allJobs, new JsonJobTransformer(), self::RESOURCE_KEY);
 
-        return new Response($this->fractalService->getFractal()
-            ->createData($resource)
-            ->toJson(),
-            Response::HTTP_OK,
-            ['content-type' => 'application/json']
-        );
+        return $this->buildResponse($resource);
     }
 
     /**
@@ -47,14 +51,9 @@ class JobController extends AbstractController
     public function getJobById(int $id): Response
     {
         $job = $this->jobService->getOneJobById($id);
-        $resource = new Item($job, new JsonJobTransformer(), 'jobs');
+        $resource = new Item($job, new JsonJobTransformer(), self::RESOURCE_KEY);
 
-        return new Response($this->fractalService->getFractal()->parseIncludes(['users', 'gardeners'])
-            ->createData($resource)
-            ->toJson(),
-            Response::HTTP_OK,
-            ['content-type' => 'application/json']
-        );
+        return $this->buildResponseWithIncludes($resource, ['users', 'gardeners']);
     }
 
     /**
@@ -65,14 +64,38 @@ class JobController extends AbstractController
     public function createNewJob(Request $request)
     {
         $job = $this->jobService->createJob($request);
-        $resource = new Item($job, new JsonJobTransformer(), 'jobs');
+        $resource = new Item($job, new JsonJobTransformer(), self::RESOURCE_KEY);
 
+        return $this->buildResponse($resource);
+
+    }
+
+    /**
+     * @param Item|Collection $resource
+     * @return Response
+     */
+    private function buildResponse($resource): Response
+    {
         return new Response($this->fractalService->getFractal()
             ->createData($resource)
             ->toJson(),
             Response::HTTP_OK,
             ['content-type' => 'application/json']
         );
+    }
 
+    /**
+     * @param Item|Collection $resource
+     * @param string|array $includes
+     * @return Response
+     */
+    private function buildResponseWithIncludes($resource, $includes): Response
+    {
+        return new Response($this->fractalService->getFractal()->parseIncludes($includes)
+            ->createData($resource)
+            ->toJson(),
+            Response::HTTP_OK,
+            ['content-type' => 'application/json']
+        );
     }
 }

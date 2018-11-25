@@ -16,6 +16,7 @@ class JobService
     /** @var JobRepository */
     private $jobRepository;
 
+    /** @var UserService */
     private $userService;
 
     public function __construct(EntityManagerInterface $entityManager, JobRepository $jobRepository, UserService $userService)
@@ -32,13 +33,18 @@ class JobService
         return $jobs;
     }
 
-    public function getOneJobById($id)
+
+    public function getOneJobById(int $id): ?Job
     {
         $job = $this->jobRepository->find($id);
 
         return $job;
     }
 
+    /**
+     * @param Request $request
+     * @return Job
+     */
     public function createJob(Request $request)
     {
         $userId = $request->query->get('userId');
