@@ -36,7 +36,7 @@ class UserController extends AbstractController
         $this->fractalService = $fractalService;
     }
     
-    /** @Route("/users/all", name="all_users") */
+    /** @Route("/users", name="all_users", methods={"GET"}) */
     public function getAllEndUsers(): Response
     {
         $allUsers = $this->userService->getAllEndUsers();
@@ -63,12 +63,12 @@ class UserController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    public function getEndUserByEmail(Request $request): Response
+    public function searchUsersByEmail(Request $request): Response
     {
         $email = $request->query->get('email');
         $user = $this->userService->searchUsers($email);
 
-        if (null === $user) {
+        if ($user === null) {
             $resource = new Item(new NullEntity(), new JsonErrorTransformer());
 
             return new Response($this->fractalService->getFractal()

@@ -16,8 +16,6 @@ request.onload = function () {
         var currentDiv = document.getElementById("div1");
         document.body.insertBefore(newDiv, currentDiv);
 
-
-
 };
 
 // Send request

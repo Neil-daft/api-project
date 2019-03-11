@@ -32,7 +32,7 @@ class GardenerController
     }
 
     /**
-     * @Route("/gardeners/all", name="all_gardeners")
+     * @Route("/gardeners", name="all_gardeners", methods={"GET"})
      */
     public function getAllGardeners()
     {
