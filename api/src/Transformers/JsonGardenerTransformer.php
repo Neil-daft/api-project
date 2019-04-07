@@ -2,8 +2,8 @@
 
 namespace App\Transformers;
 
-use App\Entity\Gardener;
 use App\Entity\Job;
+use App\Entity\User;
 use League\Fractal\TransformerAbstract;
 
 class JsonGardenerTransformer extends TransformerAbstract
@@ -12,22 +12,25 @@ class JsonGardenerTransformer extends TransformerAbstract
         'jobs'
     ];
 
-
-    public function transform(Gardener $gardener)
+    /**
+     * @param \App\Entity\User $user
+     * @return array
+     */
+    public function transform(User $user)
     {
         return [
-            'id' => (int)$gardener->getId(),
-            'email' => $gardener->getEmail(),
-            'roles' => $gardener->getRoles(),
+            'id' => (int)$user->getId(),
+            'email' => $user->getEmail(),
+            'roles' => $user->getRoles(),
             'links' => [
-                'self' => '/users/' . $gardener->getId()
+                'self' => '/users/' . $user->getId()
             ]
         ];
     }
 
-    public function includeJobs(Gardener $gardener)
+    public function includeJobs(User $user)
     {
-        $job = $gardener->getJobs();
+        $job = $user->getJobs();
         if (empty($job)) {
             $job = new Job();
         }

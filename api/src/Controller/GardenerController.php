@@ -18,7 +18,8 @@ class GardenerController
 
     /** @var FractalService */
     private $fractalService;
-    /** @var GardenerService  */
+
+    /** @var UserService */
     private $gardenerService;
 
     /**
@@ -36,7 +37,9 @@ class GardenerController
      */
     public function getAllGardeners()
     {
+
         $gardeners = $this->gardenerService->getAllGardeners();
+
         $resource = new Collection($gardeners, new JsonGardenerTransformer(), self::RESOURCE_KEY);
 
         return $this->buildResponse($resource);

@@ -11,7 +11,6 @@ class JsonJobTransformer extends TransformerAbstract
 {
     protected $availableIncludes = [
         'users',
-        'gardeners'
     ];
 
     public function transform(Job $job)

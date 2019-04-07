@@ -2,36 +2,32 @@
 
 namespace App\Service;
 
-use App\Repository\GardenerRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class GardenerService
 {
     /** @var EntityManagerInterface  */
     private $entityManager;
-    /** @var GardenerRepository  */
-    private $gardenerRepository;
+    /** @var UserRepository */
+    private $userRepository;
 
-    /**
-     * @param EntityManagerInterface $entityManager
-     * @param GardenerRepository $gardenerRepository
-     */
-    public function __construct(EntityManagerInterface $entityManager, GardenerRepository $gardenerRepository)
+    public function __construct(EntityManagerInterface $entityManager, UserRepository $userRepository)
     {
         $this->entityManager = $entityManager;
-        $this->gardenerRepository = $gardenerRepository;
+        $this->userRepository = $userRepository;
     }
 
     public function getAllGardeners(): array
     {
-        $gardeners = $this->gardenerRepository->findAll();
+        $gardeners = $this->userRepository->findBy(['type' => 'gardener']);
 
         return $gardeners;
     }
 
     public function getOneGardenerById($id)
     {
-        $gardener = $this->gardenerRepository->find($id);
+        $gardener = $this->userRepository->find($id);
 
         return $gardener;
     }

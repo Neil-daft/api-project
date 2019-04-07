@@ -35,16 +35,11 @@ class Job
     private $createdOn;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="job")
+     * @ORM\ManyToMany(targetEntity="App\Entity\User", inversedBy="jobs")
+     * @var Collection
      */
     private $user;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Gardener", inversedBy="jobs")
-     */
-    private $gardener;
-
-    
     public function getId(): ?int
     {
         return $this->id;
@@ -86,7 +81,10 @@ class Job
         return $this;
     }
 
-    public function getUser(): ?User
+    /**
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUser()
     {
         return $this->user;
     }
@@ -94,18 +92,6 @@ class Job
     public function setUser(?User $user): self
     {
         $this->user = $user;
-
-        return $this;
-    }
-
-    public function getGardener(): ?Gardener
-    {
-        return $this->gardener;
-    }
-
-    public function setGardener(?Gardener $gardener): self
-    {
-        $this->gardener = $gardener;
 
         return $this;
     }

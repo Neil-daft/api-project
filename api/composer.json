@@ -24,7 +24,8 @@
         "symfony/css-selector": "*",
         "symfony/dotenv": "*",
         "symfony/maker-bundle": "^1.7",
-        "symfony/phpunit-bridge": "*"
+        "symfony/phpunit-bridge": "*",
+        "symfony/profiler-pack": "^1.0"
     },
     "config": {
         "preferred-install": {

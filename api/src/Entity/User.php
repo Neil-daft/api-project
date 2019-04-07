@@ -37,13 +37,19 @@ class User implements UserInterface
     private $password;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Job", mappedBy="user")
+     * @var \Doctrine\Common\Collections\ArrayCollection
+     * @ORM\ManyToMany(targetEntity="Job", inversedBy="users")
      */
-    private $job;
+    private $jobs;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $type;
 
     public function __construct()
     {
-        $this->job = new ArrayCollection();
+        $this->jobs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -127,15 +133,15 @@ class User implements UserInterface
     /**
      * @return Collection|Job[]
      */
-    public function getJob(): Collection
+    public function getJobs(): Collection
     {
-        return $this->job;
+        return $this->jobs;
     }
 
     public function addJob(Job $job): self
     {
-        if (!$this->job->contains($job)) {
-            $this->job[] = $job;
+        if (!$this->jobs->contains($job)) {
+            $this->jobs[] = $job;
             $job->setUser($this);
         }
 
@@ -144,8 +150,8 @@ class User implements UserInterface
 
     public function removeJob(Job $job): self
     {
-        if ($this->job->contains($job)) {
-            $this->job->removeElement($job);
+        if ($this->jobs->contains($job)) {
+            $this->jobs->removeElement($job);
             // set the owning side to null (unless already changed)
             if ($job->getUser() === $this) {
                 $job->setUser(null);
@@ -153,5 +159,22 @@ class User implements UserInterface
         }
 
         return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function __toString(): ?String
+    {
+        return $this->getEmail();
     }
 }

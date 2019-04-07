@@ -11,7 +11,7 @@ use Faker\Factory;
 use Faker\ORM\Doctrine\Populator;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-class Fixtures extends Fixture
+class UserFixtures extends Fixture
 {
     /** @var UserPasswordEncoderInterface */
     private $passwordEncoder;
@@ -31,29 +31,31 @@ class Fixtures extends Fixture
     {
         $generator = Factory::create();
         $populator = new Populator($generator, $manager);
-        $populator->addEntity(User::class, 40, [], [
+
+        $populator->addEntity(User::class, 20, [], [
             'roles' => function ($user) {
-                $user->setRoles(['ROLE_USER']);
+                for ($i = 1; $i < 20; $i++) {
+                    $user->setRoles(['ROLE_USER']);
+                }
             },
             'password' => function ($user) {
                 $user->setPassword($this->passwordEncoder->encodePassword(
                     $user,
                     'password'
                 ));
-            }
-        ]);
-        $populator->addEntity(Gardener::class, 15, [], [
-            'roles' => function ($gardener) {
-                $gardener->setRoles(['ROLE_USER_GARDENER']);
             },
-            'password' => function ($gardener) {
-                $gardener->setPassword($this->passwordEncoder->encodePassword(
-                    $gardener,
-                    'password'
-                ));
+            'type' => function ($user) {
+                for ($i = 1; $i < 20; $i++) {
+                    $user->setType('user');
+                }
             }
         ]);
-        $populator->addEntity(Job::class, 20);
+
+        $populator->addEntity(Job::class, 20, [], [
+            'title' => function ($job) use ($generator) {
+                $job->setTitle($generator->bs);
+            }
+        ]);
         $populator->execute();
 
         $manager->flush();
